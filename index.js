@@ -5,6 +5,7 @@ module.exports = (context, request, callback) => {
   if (context.indexOf('tns-core-modules') !== -1
     || context.indexOf('nativescript-') !== -1
     || /^(tns-core-modules)/i.test(request)
+    || /^(nativescript-)/i.test(request)
     || /^(ui|application)/i.test(request)) {
 
     // Support plugins requiring sibling files by rewriting './' into 'context/'
