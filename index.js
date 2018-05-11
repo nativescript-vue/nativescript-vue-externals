@@ -1,23 +1,22 @@
 const path = require('path');
+const nodeModulesPath = path.resolve(__dirname, '..', '..', 'node_modules')
 
 module.exports = (context, request, callback) => {
+  if(context.startsWith(nodeModulesPath)) {
+    const module = context.replace(nodeModulesPath, '').split(path.sep).find(p => !!p)
+    try {
+      const pkg = require(path.resolve(nodeModulesPath, module, 'package.json'))
 
-  if (context.indexOf('tns-core-modules') !== -1
-    || context.indexOf('nativescript-') !== -1
-    || /^tns-core-modules/i.test(request)
-    || /^(ui|application)/i.test(request)) {
-
-    if (request.indexOf('../') === 0 || request.indexOf('./') === 0) {
-      let index = context.indexOf('node_modules') + 'node_modules'.length + 1;
-
-      request = path.normalize(path.join(context.substring(index).replace(/\\/g, '/'), request)).replace(/\\/g, '/');
+      if(pkg.nativescript) {
+        if(request.match(/^\.{0,2}(?:\/|\\\\|\\)/)) {
+          request = path.relative(nodeModulesPath, path.resolve(context, request))
+        }
+        return callback(null, 'commonjs ' + request.replace(/\\|\\\\/g, '/'))
+      }
+    } catch(e) {
+      // ignore
     }
-    else if (/^(ui|application)/i.test(request)) {
-      request = `tns-core-modules/${request}`.replace(/\\/g, '/');
-    }
-
-    return callback(null, 'commonjs ' + request);
   }
 
-  callback();
-};
+  callback()
+}
