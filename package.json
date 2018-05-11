@@ -1,6 +1,6 @@
 {
   "name": "nativescript-vue-externals",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "NativeScript-Vue webpack externals configuration.",
   "main": "index.js",
   "repository": {
